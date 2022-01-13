@@ -1,3 +1,8 @@
+import pydub
+from playsound import playsound
+from pydub import AudioSegment
+import numpy as np
+import sys
 def hill_encryption(plain, key):
     #Add a zero for every odd number
     global encrypted_text
@@ -125,6 +130,9 @@ def A10_decryption(cipher,key):
             temp2 = msg2d[0][i] * key2d[1][0] + msg2d[1][i] * key2d[1][1]
             decrypt_text += chr((temp2 % 26) + 65)
     print("Decrypted text> {}".format(decrypt_text))
+    print("and it is time for BEHEADED KAMIKAZE!...")
+    playsound("Serious Sam Kamikaze scream.wav")
+
 
 
 plaintext = "fuck... "
@@ -132,4 +140,4 @@ plaintext = plaintext.upper().replace(" ","")
 key = "hill"
 key = key.upper().replace(" ","")
 ciphertext = hill_encryption(plaintext, key)
-hill_decryption(ciphertext, key)
+A10_decryption(ciphertext, key)
