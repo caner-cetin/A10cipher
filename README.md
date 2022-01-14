@@ -4,3 +4,4 @@ This is a Hill 2x2 cipher that totally gone wrong, it encrypts with Hill 2x2 cip
 A10 cipher decrypts everyt Hill 2x2 encrypted texts to AAAAAAAAAAAAAAA so good luck with that.
 
 Update 1: Plays beheaded kamikaze sound after decryption.
+I will not fix this code, it was supposed to be something different but hey thanks guys for making my day and making me happy. I love you all.
