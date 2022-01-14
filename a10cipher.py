@@ -179,7 +179,7 @@ class FileOfType:
             elif os.path.islink(path):
                 raise argparse.ArgumentTypeError(f"{path} is a symbolic link")
         return path
-if __name__ == "__main__":
+if __name__ == "__a10cipher__":
     parser = argparse.ArgumentParser(description="Change every file extension to .AAAAA in folder")
     parser.add_argument("-dir","--directory", type=FileOfType("dir"))
     parser.add_argument("-ge","-getextension",action="store_true",help="Gets extension of files in folders to decrypt in the future")
