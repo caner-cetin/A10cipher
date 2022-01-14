@@ -164,7 +164,7 @@ def A10_decryption(cipher,key):
             decrypt_text += chr((temp2 % 26) + 65)
     print("Decrypted text> {}".format(decrypt_text))
     print("and it is time for BEHEADED KAMIKAZE!...")
-    # playsound("Serious Sam Kamikaze scream.wav")
+    playsound("Serious Sam Kamikaze scream.wav")
 class FileOfType:
     def __init__(self, type):
         self.type = type
