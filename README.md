@@ -11,3 +11,7 @@ Update 2: Added argsparser support running main.py with -dir "Desired Folder" -g
 and -dir "whereveryoudownloadedthecode\A10_cipher\testfolder" -d
 
 I need to add multiple types of extension support to turn this into a scary malware.
+
+Update 3: Implemented AAAA alphabet inspired by morse alphabet. Short ping (.) is equal to A and long ping (-) is equal to AAA. Check AAAA_code_DICT_lower for punctuation marks. py a10cipher.py -et converts your input message, py a10cipher.py -et -dir "randomfolder" encrypts entire .txt files in that folder according to AAAA morse alphabet and -et -f just encrypts a.txt file. Download test folder and give it a shot.
+ 
+You still see the broken ass encryption and decryption process (A10, also known as AAAAAAAAAAA) when you run it, argparse is just optional.
