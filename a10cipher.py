@@ -1,6 +1,7 @@
 import pydub
 from playsound import playsound
 from pydub import AudioSegment
+import win32com.client
 import numpy as np
 import sys
 import os
@@ -15,6 +16,81 @@ def write_key():
     return key
 def load_key():
     return open("encryption_key.txt","rb").read()
+def convert_txt_to_morse_AAAA(message,filename):
+    #Short ping is A and long ping is AAA, so letter "A" is equal to .- and A AAA
+    AAAAA_code_DICT_upper ={
+                    'A':'A AAA', 'B':'AAA A A A ',
+                    'C':' AAA A AAA A', 'D':' AAA A A', 'E':' A',
+                    'F':' A A AAA A', 'G':' AAA AAA A', 'H':' A A A A',
+                    'I':' A A', 'J':' A AAA AAA AAA', 'K':' AAA A AAA',
+                    'L':' A AAA A A', 'M':' AAA AAA', 'N':' AAA A',
+                    'O':' AAA AAA AAA', 'P':' A AAA AAA A', 'Q':' AAA AAA A AAA',
+                    'R':' A AAA A', 'S':' A A A', 'T':' AAA',
+                    'U':' A A AAA', 'V':' A A A AAA', 'W':' A AAA AAA',
+                    'X':' AAA A A AAA', 'Y':' AAA A AAA AAA', 'Z':' AAA AAA A A',
+                    '1':' A AAA AAA AAA AAA', '2':' A A AAA AAA AAA', '3':' A A A AAA AAA',
+                    '4':' A A A A AAA', '5':' A A A A A', '6':' AAA A A A A',
+                    '7':' AAA AAA A A A', '8':' AAA AAA AAA A A', '9':' AAA AAA AAA AAA A',
+                    '0':' AAA AAA AAA AAA AAA', ',':' AAA AAA A A AAA AAA', '.':' A AAA A AAA A AAA',
+                    '?':' A A AAA AAA A A', '/':' AAA A A AAA A', '-':' AAA A A A A AAA',
+                    '(':'-.--.', ')':' AAA A AAA AAA A AAA', ";": " A AAA AAA A AAA AAA",
+                    ":": "AAA AAA AAA A A A", "!": " AAA A AAA A AAA AAA",
+                    "[": "AAA A AAA A A AAA", "]":"AAA AAA A A", "&":"A AAA A A A"
+                       }
+    AAAAA_code_DICT_lower = {
+        'a': 'A AAA', 'b': 'AAA A A A ',
+        'c': ' AAA A AAA A', 'd': ' AAA A A', 'e': ' A',
+        'f': ' A A AAA A', 'g': ' AAA AAA A', 'h': ' A A A A',
+        'i': ' A A', 'j': ' A AAA AAA AAA', 'k': ' AAA A AAA',
+        'l': ' A AAA A A', 'm': ' AAA AAA', 'n': ' AAA A',
+        'o': ' AAA AAA AAA', 'p': ' A AAA AAA A', 'q': ' AAA AAA A AAA',
+        'r': ' A AAA A', 's': ' A A A', 't': ' AAA',
+        'u': ' A A AAA', 'v': ' A A A AAA', 'w': ' A AAA AAA',
+        'x': ' AAA A A AAA', 'y': ' AAA A AAA AAA', 'z': ' AAA AAA A A',
+        '1': ' A AAA AAA AAA AAA', '2': ' A A AAA AAA AAA', '3': ' A A A AAA AAA',
+        '4': ' A A A A AAA', '5': ' A A A A A', '6': ' AAA A A A A',
+        '7': ' AAA AAA A A A', '8': ' AAA AAA AAA A A', '9': ' AAA AAA AAA AAA A',
+        '0': ' AAA AAA AAA AAA AAA', ',': ' AAA AAA A A AAA AAA', '.': ' A AAA A AAA A AAA',
+        '?': ' A A AAA AAA A A', '/': ' AAA A A AAA A', '-': ' AAA A A A A AAA',
+        "'": ' A AAA AAA AAA AAA A', ":": "AAA AAA AAA A A A",
+        '(': '-.--.', ')': ' AAA A AAA AAA A AAA',
+        ";": " A AAA AAA A AAA AAA",
+        "!": " AAA A AAA A AAA AAA", "[" : "AAA A AAA A A AAA", "]": "AAA AAA A A","&":"A AAA A A A"
+    }
+    ciphered = ""
+    if filename == None:
+     for letter in message:
+        letter_check = letter.isupper()
+        if (letter != " ") and (letter_check==True):
+            ciphered += AAAAA_code_DICT_upper[letter] + " "
+        elif (letter != " ") and (letter_check==False):
+            ciphered += AAAAA_code_DICT_lower[letter] + " "
+        else:
+            # 1 space indicates different characters
+            # and 2 indicates different words
+            ciphered += " "
+    elif filename != None:
+      with open(filename, "r") as file:
+          file_data = file.read()
+          file.close()
+      for letter in file_data:
+          #Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
+          #Check line 54.
+          # [ is equal to AAA A AAA A A AAA. -.-..-
+          # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but fuck it.
+          letter_check = letter.isupper()
+          if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
+              ciphered += AAAAA_code_DICT_upper[letter] + " "
+          elif (letter != " ") and (letter_check == False) and (letter != "\n") and (letter != "|"):
+              ciphered += AAAAA_code_DICT_lower[letter] + " "
+          elif letter == "\n":
+              ciphered += "\n"
+          elif letter == "|":
+              ciphered += "|"
+          else:
+              ciphered += " "
+      with open(filename, "w") as file:
+          file.write(ciphered)
 def get_original_extension_of_file(foldername,key):
     files = Path(foldername).glob("*")
     global original_extension
@@ -24,6 +100,67 @@ def get_original_extension_of_file(foldername,key):
             original_extension = file_extension
         file2.write(original_extension)
     return original_extension
+def convert_to_AAAA_in_folder(foldername):
+    AAAAA_code_DICT_upper = {
+        'A': 'A AAA', 'B': 'AAA A A A ',
+        'C': ' AAA A AAA A', 'D': ' AAA A A', 'E': ' A',
+        'F': ' A A AAA A', 'G': ' AAA AAA A', 'H': ' A A A A',
+        'I': ' A A', 'J': ' A AAA AAA AAA', 'K': ' AAA A AAA',
+        'L': ' A AAA A A', 'M': ' AAA AAA', 'N': ' AAA A',
+        'O': ' AAA AAA AAA', 'P': ' A AAA AAA A', 'Q': ' AAA AAA A AAA',
+        'R': ' A AAA A', 'S': ' A A A', 'T': ' AAA',
+        'U': ' A A AAA', 'V': ' A A A AAA', 'W': ' A AAA AAA',
+        'X': ' AAA A A AAA', 'Y': ' AAA A AAA AAA', 'Z': ' AAA AAA A A',
+        '1': ' A AAA AAA AAA AAA', '2': ' A A AAA AAA AAA', '3': ' A A A AAA AAA',
+        '4': ' A A A A AAA', '5': ' A A A A A', '6': ' AAA A A A A',
+        '7': ' AAA AAA A A A', '8': ' AAA AAA AAA A A', '9': ' AAA AAA AAA AAA A',
+        '0': ' AAA AAA AAA AAA AAA', ',': ' AAA AAA A A AAA AAA', '.': ' A AAA A AAA A AAA',
+        '?': ' A A AAA AAA A A', '/': ' AAA A A AAA A', '-': ' AAA A A A A AAA',
+        '(': '-.--.', ')': ' AAA A AAA AAA A AAA', ";": " A AAA AAA A AAA AAA",
+        ":": "AAA AAA AAA A A A", "!": " AAA A AAA A AAA AAA",
+        "[": "AAA A AAA A A AAA", "]": "AAA AAA A A", "&": "A AAA A A A"
+    }
+    AAAAA_code_DICT_lower = {
+        'a': 'A AAA', 'b': 'AAA A A A ',
+        'c': ' AAA A AAA A', 'd': ' AAA A A', 'e': ' A',
+        'f': ' A A AAA A', 'g': ' AAA AAA A', 'h': ' A A A A',
+        'i': ' A A', 'j': ' A AAA AAA AAA', 'k': ' AAA A AAA',
+        'l': ' A AAA A A', 'm': ' AAA AAA', 'n': ' AAA A',
+        'o': ' AAA AAA AAA', 'p': ' A AAA AAA A', 'q': ' AAA AAA A AAA',
+        'r': ' A AAA A', 's': ' A A A', 't': ' AAA',
+        'u': ' A A AAA', 'v': ' A A A AAA', 'w': ' A AAA AAA',
+        'x': ' AAA A A AAA', 'y': ' AAA A AAA AAA', 'z': ' AAA AAA A A',
+        '1': ' A AAA AAA AAA AAA', '2': ' A A AAA AAA AAA', '3': ' A A A AAA AAA',
+        '4': ' A A A A AAA', '5': ' A A A A A', '6': ' AAA A A A A',
+        '7': ' AAA AAA A A A', '8': ' AAA AAA AAA A A', '9': ' AAA AAA AAA AAA A',
+        '0': ' AAA AAA AAA AAA AAA', ',': ' AAA AAA A A AAA AAA', '.': ' A AAA A AAA A AAA',
+        '?': ' A A AAA AAA A A', '/': ' AAA A A AAA A', '-': ' AAA A A A A AAA',
+        "'": ' A AAA AAA AAA AAA A', ":": "AAA AAA AAA A A A",
+        '(': '-.--.', ')': ' AAA A AAA AAA A AAA',
+        ";": " A AAA AAA A AAA AAA",
+        "!": " AAA A AAA A AAA AAA", "[": "AAA A AAA A A AAA", "]": "AAA AAA A A", "&": "A AAA A A A"
+    }
+    ciphered = ""
+    files = Path(foldername).glob("*")
+    for filename in files:
+      if(filename != None):
+       with open(filename, "r") as file:
+          file_data = file.read()
+          file.close()
+       for letter in file_data:
+          letter_check = letter.isupper()
+          if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
+              ciphered += AAAAA_code_DICT_upper[letter] + " "
+          elif (letter != " ") and (letter_check == False) and (letter != "\n") and (letter != "|"):
+              ciphered += AAAAA_code_DICT_lower[letter] + " "
+          elif letter == "\n":
+              ciphered += "\n"
+          elif letter == "|":
+              ciphered += "|"
+          else:
+              ciphered += " "
+       with open(filename, "w") as file:
+          file.write(ciphered)
 def load_extension():
     return open("extension.txt","r").read()
 def change_extensions_in_folder(foldername,key):
@@ -179,7 +316,7 @@ class FileOfType:
             elif os.path.islink(path):
                 raise argparse.ArgumentTypeError(f"{path} is a symbolic link")
         return path
-if __name__ == "__a10cipher__":
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Change every file extension to .AAAAA in folder")
     parser.add_argument("-dir","--directory", type=FileOfType("dir"))
     parser.add_argument("-ge","-getextension",action="store_true",help="Gets extension of files in folders to decrypt in the future")
@@ -187,6 +324,8 @@ if __name__ == "__a10cipher__":
                         help="Whether to generate a new key or use existing")
     parser.add_argument("-e","--encrypt",action="store_true",help="Encrypts every file with .AAAAA extension key")
     parser.add_argument("-d","--decrypt",action="store_true",help="Decrypts every file with .AAAAA extension key")
+    parser.add_argument("-f","--file",type = FileOfType("file"))
+    parser.add_argument("-et","--encrypttext",action="store_true",help="Encrypts a .txt file with .AAAAA alphabet.")
     args = parser.parse_args()
     print(args)
 generate_key = args.generate_key
@@ -202,10 +341,20 @@ directory_ = args.directory
 encrypt_ = args.encrypt
 decrypt_ = args.decrypt
 directory = args.directory
+file = args.file
+encrypttext_ = args.encrypttext
 if (directory_ != None) and (encrypt_ == True):
     change_extensions_in_folder(directory,key)
 elif (directory_ != None) and (decrypt_ == True):
     decrypt_in_folder(directory, key, original_extension)
+
+if encrypttext_ == True:
+    print("Please enter a string to encrypt, leave this blank if you want to encrypt a .txt file")
+    message = input()
+    convert_txt_to_morse_AAAA(message,file)
+if (directory_ != None) and encrypttext_ == True:
+    convert_to_AAAA_in_folder(directory)
+
 plaintext = "fuck..."
 plaintext = plaintext.upper().replace(" ","")
 key = "hill"
