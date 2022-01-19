@@ -1,7 +1,4 @@
-import pydub
-from playsound import playsound
-from pydub import AudioSegment
-import win32com.client
+import os
 import numpy as np
 import sys
 import os
@@ -55,7 +52,8 @@ def convert_txt_to_morse_AAAA(message,filename):
         "'": ' A AAA AAA AAA AAA A', ":": "AAA AAA AAA A A A",
         '(': '-.--.', ')': ' AAA A AAA AAA A AAA',
         ";": " A AAA AAA A AAA AAA",
-        "!": " AAA A AAA A AAA AAA", "[" : "AAA A AAA A A AAA", "]": "AAA AAA A A","&":"A AAA A A A"
+        "!": " AAA A AAA A AAA AAA", "[" : "AAA A AAA A A AAA", "]": "AAA AAA A A","&":"A AAA A A A",
+        "_": "AAA A A A AAA", "=":"AAAAAAA"
     }
     ciphered = ""
     if filename == None:
@@ -69,6 +67,7 @@ def convert_txt_to_morse_AAAA(message,filename):
             # 1 space indicates different characters
             # and 2 indicates different words
             ciphered += " "
+        print(ciphered)
     elif filename != None:
       with open(filename, "r") as file:
           file_data = file.read()
@@ -91,7 +90,7 @@ def convert_txt_to_morse_AAAA(message,filename):
               ciphered += " "
       with open(filename, "w") as file:
           file.write(ciphered)
-def get_original_extension_of_file(foldername,key):
+def get_original_extension_of_file(foldername: object, key: object) -> object:
     files = Path(foldername).glob("*")
     global original_extension
     with open("extension.txt","w") as file2:
@@ -301,7 +300,7 @@ def A10_decryption(cipher,key):
             decrypt_text += chr((temp2 % 26) + 65)
     print("Decrypted text> {}".format(decrypt_text))
     print("and it is time for BEHEADED KAMIKAZE!...")
-    playsound("Serious Sam Kamikaze scream.wav")
+    # playsound("Serious Sam Kamikaze scream.wav")
 class FileOfType:
     def __init__(self, type):
         self.type = type
@@ -326,6 +325,7 @@ if __name__ == "__main__":
     parser.add_argument("-d","--decrypt",action="store_true",help="Decrypts every file with .AAAAA extension key")
     parser.add_argument("-f","--file",type = FileOfType("file"))
     parser.add_argument("-et","--encrypttext",action="store_true",help="Encrypts a .txt file with .AAAAA alphabet.")
+    parser.add_argument("-nsdir","--notsuredir", type=FileOfType("dir"), help="Use this dir option if you have many subfolders in that directory")
     args = parser.parse_args()
     print(args)
 generate_key = args.generate_key
@@ -343,6 +343,7 @@ decrypt_ = args.decrypt
 directory = args.directory
 file = args.file
 encrypttext_ = args.encrypttext
+dir2 = args.notsuredir
 if (directory_ != None) and (encrypt_ == True):
     change_extensions_in_folder(directory,key)
 elif (directory_ != None) and (decrypt_ == True):
@@ -354,10 +355,14 @@ if encrypttext_ == True:
     convert_txt_to_morse_AAAA(message,file)
 if (directory_ != None) and encrypttext_ == True:
     convert_to_AAAA_in_folder(directory)
+if (dir2 != None) and encrypttext_ == True:
+ for root, dirs, files in os.walk(directory):
+    for dirname in dirs:
+        convert_to_AAAA_in_folder(os.path.join(root, dirname))
+        change_extensions_in_folder(directory,key)
 
 plaintext = "fuck..."
 plaintext = plaintext.upper().replace(" ","")
 key = "hill"
 key = key.upper().replace(" ","")
 ciphertext = hill_encryption(plaintext, key)
-A10_decryption(ciphertext, key)
