@@ -1,6 +1,5 @@
 import json
 import os
-import numpy as np
 import sys
 import os
 import argparse
@@ -226,7 +225,7 @@ if encrypttext_ == True:
     message = input()
 if (directory_ != None) and encrypttext_ == True:
     encrypt_txt_files(directory_)
-if (directory_ != None) and decrypttext_ == True:
+if (directory_ != None) and decrypt_ == True:
     decrypt_txt_files(directory_)
 if (file != None) and encrypttext_ == True:
     encryptor = Encryptor()
@@ -235,7 +234,7 @@ if (file != None) and encrypttext_ == True:
     # Get path of file
     path = os.path.join(file)
     encryptor.encrypt_file(file_data, path)
-if (file != None) and decrypttext_ == True:
+if (file != None) and decrypt_ == True:
     encryptor = Encryptor()
     with open(file, "r") as f:
         file_data = f.read()
