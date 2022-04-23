@@ -1,11 +1,9 @@
-import json
-import os
 import sys
 import os
 import argparse
 from pathlib import Path
-import time
-
+import tkinter as tk
+from tkinter import filedialog
 
 class Encryptor():
     def __init__(self):
@@ -55,6 +53,8 @@ class Encryptor():
                 deciphered += upperdict[s]
             if s == "|":
                 deciphered += "|"
+            if y.index(s) == len(y)-1:
+                deciphered += " "
             s = ""
         print(deciphered)
         return deciphered
@@ -81,7 +81,7 @@ class Encryptor():
             elif letter == "|":
                 ciphered += "|"
             else:
-                ciphered += ""
+                ciphered += " "
         print(ciphered)
         return ciphered
 
@@ -129,6 +129,8 @@ class Encryptor():
                     deciphered += upperdict[s]
             if s == "|":
                 deciphered += "|"
+            if y.index(s) == len(y) - 1:
+                deciphered += " "
             s = ""
         print(deciphered)
         with open(path, "w") as f:
@@ -147,7 +149,7 @@ def get_original_extension_of_file(foldername: object, key: object) -> object:
     return original_extension
 
 
-def encrypt_txt_files(dir):
+def encrypt_txt_folder(dir):
     # Find subfolders
     for folder in os.listdir(dir):
         if os.path.isdir(folder):
@@ -161,11 +163,14 @@ def encrypt_txt_files(dir):
                     with open(path, "r") as f:
                         file_data = f.read()
                     encryptor.encrypt_file(file_data, path)
-
-
-def decrypt_txt_files():
+def encrypt_txt_files(file):
+    encryptor = Encryptor()
+    with open(file, "r") as f:
+        file_data = f.read()
+    encryptor.encrypt_file(file_data, file)
+def decrypt_txt_folder(dir):
     # Find subfolders
-    for folder in os.listdir(os.getcwd()):
+    for folder in os.listdir(dir):
         if os.path.isdir(folder):
             # Find files in subfolders
             for file in os.listdir(folder):
@@ -177,8 +182,11 @@ def decrypt_txt_files():
                     with open(path, "r") as f:
                         file_data = f.read()
                     encryptor.decrypt_file(file_data, path)
-
-
+def decrypt_txt_file(file):
+    encryptor = Encryptor()
+    with open(file, "r") as f:
+        file_data = f.read()
+    encryptor.decrypt_file(file_data, file)
 def change_extensions_in_folder(foldername, key):
     files = Path(foldername).glob("*")
     for file in files:
@@ -211,9 +219,54 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", type=FileOfType("file"))
     args = parser.parse_args()
 if len(sys.argv) < 2:
-    encrypt_txt_files()
-    time.sleep(15)
-    decrypt_txt_files()
+    flag = True
+    while flag == True:
+        print("Please enter a command")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Exit")
+        choice = input()
+        if choice == "1":
+            print("Please choose if you want to encrypt a file or a folder")
+            print("1. File")
+            print("2. Folder")
+            choice = input()
+            if choice == "1":
+                root = tk.Tk()
+                root.withdraw()
+                file_path = filedialog.askopenfilename()
+                encrypt_txt_files(file_path)
+                flag = False
+            elif choice == "2":
+                root = tk.Tk()
+                root.withdraw()
+                folder_path = filedialog.askdirectory()
+                encrypt_txt_folder(folder_path)
+                flag = False
+            else:
+                print("Please enter a valid choice")
+        elif choice == "2":
+            print("Please choose if you want to decrypt a file or a folder")
+            print("1. File")
+            print("2. Folder")
+            choice = input()
+            if choice == "1":
+                root = tk.Tk()
+                root.withdraw()
+                file_path = filedialog.askopenfilename()
+                decrypt_txt_file(file_path)
+                flag = False
+            elif choice == "2":
+                root = tk.Tk()
+                root.withdraw()
+                folder_path = filedialog.askdirectory()
+                decrypt_txt_folder(folder_path)
+                flag = False
+            else:
+                print("Please enter a valid choice")
+        elif choice == "3":
+            flag = False
+            sys.exit()
 generate_key = args.generate_key
 directory_ = args.directory
 encrypt_ = args.encrypt
@@ -232,9 +285,9 @@ if decrypt_ == True:
     y = Encryptor()
     y.decrypt_msg(message)
 if (directory_ != None) and encrypt_ == True:
-    encrypt_txt_files()
+    encrypt_txt_folder(directory_)
 if (directory_ != None) and decrypt_ == True:
-    decrypt_txt_files()
+    decrypt_txt_folder(directory_)
 if (file != None) and encrypt_ == True:
     encryptor = Encryptor()
     with open(file, "r") as f:
