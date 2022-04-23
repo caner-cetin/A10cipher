@@ -60,28 +60,30 @@ class Encryptor():
         return deciphered
 
     def encrypt_msg(self, msg):
-        lowerdict = self.lowerinverted
-        upperdict = self.upperinverted
+        lowerdict = self.AAAAA_code_DICT_lower
+        upperdict = self.AAAAA_code_DICT_upper
         s = ""
-        deciphered = ""
+        ciphered = ""
         y =msg.split(" ")
         print(y)
-        for s in y:
-            if "\n" in s:
-                deciphered += "\n"
-                placeholder = s.replace("\n", "")
-                s = placeholder
+        for letter in msg:
+            # Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
+            # Check line 54.
+            # [ is equal to AAA A AAA A A AAA. -.-..-
+            # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but fuck it.
+            letter_check = letter.isupper()
+            if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
+                ciphered += upperdict[letter] + " "
+            elif (letter != " ") and (letter_check == False) and (letter != "\n") and (letter != "|"):
+                ciphered += lowerdict[letter] + " "
+            elif letter == "\n":
+                ciphered += "\n"
+            elif letter == "|":
+                ciphered += "|"
             else:
-                pass
-            if s in lowerdict.keys():
-                deciphered += lowerdict[s]
-            elif s in upperdict.keys():
-                deciphered += upperdict[s]
-            if s == "|":
-                deciphered += "|"
-            s = ""
-        print(deciphered)
-        return deciphered
+                ciphered += ""
+        print(ciphered)
+        return ciphered
 
     def encrypt_file(self, file_name, path):
         lowerdict = self.AAAAA_code_DICT_lower
@@ -145,9 +147,9 @@ def get_original_extension_of_file(foldername: object, key: object) -> object:
     return original_extension
 
 
-def encrypt_txt_files(dir):
+def encrypt_txt_files():
     # Find subfolders
-    for folder in os.listdir(dir):
+    for folder in os.listdir(os.getcwd()):
         if os.path.isdir(folder):
             # Find files in subfolders
             for file in os.listdir(folder):
@@ -210,7 +212,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 if len(sys.argv) < 2:
     encrypt_txt_files()
-    time.sleep(30)
+    time.sleep(15)
     decrypt_txt_files()
 generate_key = args.generate_key
 directory_ = args.directory
@@ -218,16 +220,22 @@ encrypt_ = args.encrypt
 decrypt_ = args.decrypt
 directory = args.directory
 file = args.file
-encrypttext_ = args.encrypttext
 
-if encrypttext_ == True:
+if encrypt_ == True:
     print("Please enter a string to encrypt, leave this blank if you want to encrypt a .txt file")
     message = input()
-if (directory_ != None) and encrypttext_ == True:
-    encrypt_txt_files(directory_)
+    y = Encryptor()
+    y.encrypt_msg(message)
+if decrypt_ == True:
+    print("Please enter a string to decrypt, leave this blank if you want to decrypt a .txt file")
+    message = input()
+    y = Encryptor()
+    y.decrypt_msg(message)
+if (directory_ != None) and encrypt_ == True:
+    encrypt_txt_files()
 if (directory_ != None) and decrypt_ == True:
-    decrypt_txt_files(directory_)
-if (file != None) and encrypttext_ == True:
+    decrypt_txt_files()
+if (file != None) and encrypt_ == True:
     encryptor = Encryptor()
     with open(file, "r") as f:
         file_data = f.read()
