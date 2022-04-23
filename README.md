@@ -1,6 +1,6 @@
 # A10_cipher
 I MANAGED TO FUCKING FINALLY DECRYPT THIS PILE OF SHIT.
-
+```ruby
 options:
   -h, --help            show this help message and exit
   -dir,--directory      Show a folder path to encrypt/decrypt
@@ -8,7 +8,7 @@ options:
   -e, --encrypt         Encrypts every txt file in directory/or single message or file with AAAA alphabet
   -d, --decrypt         Decrypts every txt file in directory/or single message or file with AAAA alphabet
   -f FILE, --file FILE
-
+```
 well... this was a meme alphabet and cipher that mistakenly created because of some small fuckups in hill 2x2 matrix decryption, and every encrypted text was decrypted to AAAAAAA.
 
 I implemented a morse alphabet, that is translated to A10 cipher. For example:
