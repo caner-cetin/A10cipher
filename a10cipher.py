@@ -147,9 +147,9 @@ def get_original_extension_of_file(foldername: object, key: object) -> object:
     return original_extension
 
 
-def encrypt_txt_files():
+def encrypt_txt_files(dir):
     # Find subfolders
-    for folder in os.listdir(os.getcwd()):
+    for folder in os.listdir(dir):
         if os.path.isdir(folder):
             # Find files in subfolders
             for file in os.listdir(folder):
