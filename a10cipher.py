@@ -4,8 +4,7 @@ import argparse
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog
-
-
+import click
 class Encryptor():
     def __init__(self):
         self.AAAAA_code_DICT_lower = {
@@ -63,8 +62,10 @@ class Encryptor():
                 deciphered += "\n"
                 placeholder = s.replace("\n", "")
                 s = placeholder
-            else:
-                pass
+            if "NEW_WORD" in s:
+                deciphered += " "
+                placeholder = s.replace("NEW_WORD", "")
+                s = placeholder
             if s in lowerdict.keys():
                 deciphered += lowerdict[s]
             elif s in upperdict.keys():
@@ -193,6 +194,14 @@ def encrypt_txt_files(file):
     encryptor.encrypt_file(file_data, file)
 
 
+def encrypt_messages(message):
+    encryptor = Encryptor()
+    ciphered = encryptor.encrypt_msg(message)
+    with open("message.txt", "w") as f:
+        f.write(ciphered)
+    return ciphered
+
+
 def decrypt_txt_folder(dir):
     # Find subfolders
     for folder in os.listdir(dir):
@@ -207,7 +216,13 @@ def decrypt_txt_folder(dir):
                     with open(path, "r") as f:
                         file_data = f.read()
                     encryptor.decrypt_file(file_data, path)
-
+def decrypt_messages(message):
+    encryptor = Encryptor()
+    deciphered = encryptor.decrypt_msg(message)
+    print(deciphered)
+    with open("message.txt", "w") as f:
+        f.write(deciphered)
+    return deciphered
 
 def decrypt_txt_file(file):
     encryptor = Encryptor()
@@ -257,12 +272,14 @@ if len(sys.argv) < 2:
         print("Please enter a command")
         print("1. Encrypt")
         print("2. Decrypt")
-        print("3. Exit")
+        print("3. Display Encrypted Messages")
+        print("4. Exit")
         choice = input()
         if choice == "1":
             print("Please choose if you want to encrypt a file or a folder")
             print("1. File")
             print("2. Folder")
+            print("3. Single Message")
             choice = input()
             if choice == "1":
                 root = tk.Tk()
@@ -270,14 +287,37 @@ if len(sys.argv) < 2:
                 root.title("Please choose a file")
                 file_path = filedialog.askopenfilename()
                 encrypt_txt_files(file_path)
-                flag = False
+                print("Encryption complete")
+                print("Press 3 to exit, press 2 to return to main menu")
+                choice = input()
+                if choice == "3":
+                    flag = False
+                elif choice == "2":
+                    flag = True
             elif choice == "2":
                 root = tk.Tk()
                 root.withdraw()
                 root.title("Please choose a dir")
                 folder_path = filedialog.askdirectory()
                 encrypt_txt_folder(folder_path)
-                flag = False
+                print("Encryption complete")
+                print("Press 3 to exit, press 2 to return to main menu")
+                choice = input()
+                if choice == "3":
+                    flag = False
+                elif choice == "2":
+                    flag = True
+            elif choice == "3":
+                initial_message = b"#Enter the message you want to encrypt, save and close the editor when you are done."
+                edited_message = click.edit(initial_message)
+                encrypt_messages(edited_message)
+                print("Encrytion complete, encrypted text is in the file 'message.txt'")
+                print("Press 3 to exit, press 2 to return to main menu")
+                choice = input()
+                if choice == "3":
+                    flag = False
+                elif choice == "2":
+                    flag = True
             else:
                 print("Please enter a valid choice")
         elif choice == "2":
@@ -287,23 +327,84 @@ if len(sys.argv) < 2:
             choice = input()
             if choice == "1":
                 root = tk.Tk()
-                root.title("Please choose a file")
                 root.withdraw()
                 file_path = filedialog.askopenfilename()
                 decrypt_txt_file(file_path)
-                flag = False
+                print("Decryption complete")
+                print("Press 3 to exit, press 2 to return to main menu")
+                choice = input()
+                if choice == "3":
+                    flag = False
+                elif choice == "2":
+                    flag = True
             elif choice == "2":
                 root = tk.Tk()
                 root.withdraw()
-                root.title("Please choose a dir")
                 folder_path = filedialog.askdirectory()
                 decrypt_txt_folder(folder_path)
-                flag = False
+                print("Decryption complete")
+                print("Press 3 to exit, press 2 to return to main menu")
+                choice = input()
+                if choice == "3":
+                    flag = False
+                elif choice == "2":
+                    flag = True
             else:
                 print("Please enter a valid choice")
         elif choice == "3":
-            flag = False
-            sys.exit()
+            print("Please pick the message or file you want to display")
+            print("1. Message")
+            print("2. File")
+            choice = input()
+            if choice == "1":
+                root = tk.Tk()
+                root.withdraw()
+                file_path = filedialog.askopenfilename()
+                with open(file_path, "r") as f:
+                    print(f.read())
+                print("Press 1 to decrypt the text, press 2 to return to main menu, 3 to exit.")
+                choice = input()
+                if choice == "1":
+                    decrypt_messages(file_path)
+                    print("Decryption complete")
+                    print("Decrypted text has overwritten the original file")
+                    print("Press 3 to exit, press 2 to return to main menu")
+                    choice = input()
+                    if choice == "3":
+                        flag = False
+                    elif choice == "2":
+                        flag = True
+                if choice == "2":
+                    flag = True
+                if choice == "3":
+                    sys.exit()
+            elif choice == "2":
+                root = tk.Tk()
+                root.withdraw()
+                root.title("Please choose a file")
+                file_path = filedialog.askopenfilename()
+                with open(file_path, "r") as f:
+                    print(f.read())
+                print("Press 1 to decrypt the text, press 2 to return to main menu, 3 to exit.")
+                choice = input()
+                if choice == "1":
+                    decrypt_txt_file(file_path)
+                    print("Decryption complete")
+                    print("Decrypted text has overwritten the original file")
+                    print("Press 3 to exit, press 2 to return to main menu")
+                    choice = input()
+                    if choice == "3":
+                        flag = False
+                    elif choice == "2":
+                        flag = True
+                if choice == "2":
+                    flag = True
+                if choice == "3":
+                    sys.exit()
+
+        elif choice == "4":
+             flag = False
+             sys.exit()
 generate_key = args.generate_key
 directory_ = args.directory
 encrypt_ = args.encrypt
