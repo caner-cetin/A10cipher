@@ -308,7 +308,7 @@ if len(sys.argv) < 2:
                 elif choice == "2":
                     flag = True
             elif choice == "3":
-                initial_message = b"#Enter the message you want to encrypt, save and close the editor when you are done."
+                initial_message = "Enter the message you want to encrypt, save and close the editor when you are done."
                 edited_message = click.edit(initial_message)
                 encrypt_messages(edited_message)
                 print("Encrytion complete, encrypted text is in the file 'message.txt'")
