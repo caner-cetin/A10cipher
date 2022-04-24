@@ -99,7 +99,7 @@ class Encryptor():
             elif letter == "|":
                 ciphered += "|"
             else:
-                ciphered += " "
+                ciphered += "00"
         print(ciphered)
         return ciphered
 
@@ -107,22 +107,25 @@ class Encryptor():
         lowerdict = self.AAAAA_code_DICT_lower
         upperdict = self.AAAAA_code_DICT_upper
         ciphered = ""
-        for letter in file_name:
-            # Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
-            # Check line 54.
-            # [ is equal to AAA A AAA A A AAA. -.-..-
-            # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but fuck it.
-            letter_check = letter.isupper()
-            if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
-                ciphered += upperdict[letter] + " "
-            elif (letter != " ") and (letter_check == False) and (letter != "\n") and (letter != "|"):
-                ciphered += lowerdict[letter] + " "
-            elif letter == "\n":
-                ciphered += "\n"
-            elif letter == "|":
-                ciphered += "|"
-            else:
-                ciphered += ""
+        y = file_name.split(" ")
+        for words in y:
+            ciphered += "NEW_WORD"
+            for letter in words:
+                # Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
+                # Check line 54.
+                # [ is equal to AAA A AAA A A AAA. -.-..-
+                # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but fuck it.
+                letter_check = letter.isupper()
+                if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
+                    ciphered += upperdict[letter] + " "
+                elif (letter != " ") and (letter_check == False) and (letter != "\n") and (letter != "|"):
+                    ciphered += lowerdict[letter] + " "
+                elif letter == "\n":
+                    ciphered += "\n"
+                elif letter == "|":
+                    ciphered += "|"
+                else:
+                    ciphered += ""
         print(ciphered)
         with open(path, "w") as f:
             f.write(ciphered)
@@ -133,11 +136,14 @@ class Encryptor():
         s = ""
         deciphered = ""
         y = file_data.split(" ")
-        print(y)
         for s in y:
             if "\n" in s:
                 deciphered += "\n"
                 placeholder = s.replace("\n", "")
+                s = placeholder
+            if "NEW_WORD" in s:
+                deciphered += " "
+                placeholder = s.replace("NEW_WORD", "")
                 s = placeholder
             else:
                 pass
