@@ -5,11 +5,12 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog
 
+
 class Encryptor():
     def __init__(self):
         self.AAAAA_code_DICT_lower = {
             'a': 'Aa0AAA', 'b': 'AA0A0A0A0A',
-            'c': 'AAA0A0AAA0A', 'd': 'AAA0A0A', 'e': 'A10AA0A0AAAAAAAAA',
+            'c': 'AAA0A0AAA0A', 'd': 'AAA0A0A', 'e': 'A10AA0A0AAA',
             'f': 'A0A0AAA0A', 'g': 'AAA0AAA0A', 'h': 'Aa10A0A0A',
             'i': 'AA0A', 'j': 'aA0AAA0AAA0AAA', 'k': 'AAA0A0AAA',
             'l': 'A0AAA0A0A', 'm': 'AAA0AAA', 'n': 'AAA0AAAA',
@@ -28,10 +29,27 @@ class Encryptor():
             "!": "0AA0A0AaaAA0A0AAA0AAA", "[": "AAA0aA0AAA0A0A0AAA", "]": "AAA0AAA0A0A", "&": "A0AAA0A0A0A",
             "_": "AAA0A0A0A0AAA", "=": "AAAAAAA"
         }
-        self.AAAAA_code_DICT_upper = {k.upper():v for k,v in self.AAAAA_code_DICT_lower.items()}
+        self.AAAAA_code_DICT_upper = {
+            'A': 'A0AAA', 'B': 'AAA0A0A0A0',
+            'C': '0AAA0A0AAA0A', 'D': '0AAA0A0A', 'E': '0A',
+            'F': '0A0A0AAA0A', 'G': '0AAA0AAA0A', 'H': '0A0A0A0A',
+            'I': '0A0A', 'J': '0A0AAA0AAaA0AAA', 'K': '0AAA0A0AAA',
+            'L': '0A0AAA0A0A', 'M': '0AAA0AAA', 'N': '0AAA0A',
+            'O': '0AAA0AAA0AAA', 'P': '0aA0AAA0AAA0A', 'Q': '0AAA0AAA0A0AAA',
+            'R': '0A0AAA0A', 'S': '0A0A0A', 'T': '0AAA',
+            'U': '0A0A0AAA', 'V': '0A0A0A0AAA', 'W': '0A0AAA0AAA',
+            'X': '0AAA0A0A0AAA', 'Y': '0AAA0A0AAA0AAA', 'Z': '0AAA0AAA0A0A',
+            '1': '0A0AAaA0AAA0AAA0AAA', '2': '0A0aA0AAA0AAA0AAA', '3': '0A0A0A0AAA0AAA',
+            '4': '0A0A0A0A0AAA', '5': '0A0A0A0A0A', '6': '0AAA0A0A0A0A',
+            '7': '0AAA0AAA0A0A0A', '8': '0AAA0AAA0AAA0A0A', '9': '0AAA0AAA0AAA0AAA0A',
+            '0': '0AAA0AAA0AAA0AAA0AAA', ',': '0AAA0AAA0A0A0AAA0AAA', '.': '0A0AAA0A0AAA0A0AAA',
+            '?': '0A0aA0AAA0AAA0A0A', '/': '0AAA0A0A0AAA0A', '-': '0AAA0A0A0A0A0AAA',
+            '(': '-.--.', ')': '0AAA0aA0AAA0AAA0Aa0AAA', ";": "a0A0AAA0aAAA0A0AAA0AAA",
+            ":": "AAA0AAA0AAA0A0A0A", "!": "0AAA0A0AAA0A0AAA0AAA",
+            "[": "AAA0A0AAA0A0A0AAA", "]": "AAA0AAA0A0A", "&": "A0AAA0A0A0A"
+        }
         self.lowerinverted = {v: k for k, v in self.AAAAA_code_DICT_lower.items()}
         self.upperinverted = {v: k for k, v in self.AAAAA_code_DICT_upper.items()}
-
 
     def decrypt_msg(self, msg):
         lowerdict = self.lowerinverted
@@ -53,7 +71,7 @@ class Encryptor():
                 deciphered += upperdict[s]
             if s == "|":
                 deciphered += "|"
-            if y.index(s) == len(y)-1:
+            if y.index(s) == len(y) - 1:
                 deciphered += " "
             s = ""
         print(deciphered)
@@ -64,7 +82,7 @@ class Encryptor():
         upperdict = self.AAAAA_code_DICT_upper
         s = ""
         ciphered = ""
-        y =msg.split(" ")
+        y = msg.split(" ")
         print(y)
         for letter in msg:
             # Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
@@ -124,14 +142,11 @@ class Encryptor():
             else:
                 pass
             if s in lowerdict.keys():
-                    deciphered += lowerdict[s]
+                deciphered += lowerdict[s]
             elif s in upperdict.keys():
-                    deciphered += upperdict[s]
+                deciphered += upperdict[s]
             if s == "|":
                 deciphered += "|"
-            if y.index(s) == len(y) - 1:
-                deciphered += " "
-            s = ""
         print(deciphered)
         with open(path, "w") as f:
             f.write(deciphered)
@@ -163,11 +178,15 @@ def encrypt_txt_folder(dir):
                     with open(path, "r") as f:
                         file_data = f.read()
                     encryptor.encrypt_file(file_data, path)
+
+
 def encrypt_txt_files(file):
     encryptor = Encryptor()
     with open(file, "r") as f:
         file_data = f.read()
     encryptor.encrypt_file(file_data, file)
+
+
 def decrypt_txt_folder(dir):
     # Find subfolders
     for folder in os.listdir(dir):
@@ -182,16 +201,22 @@ def decrypt_txt_folder(dir):
                     with open(path, "r") as f:
                         file_data = f.read()
                     encryptor.decrypt_file(file_data, path)
+
+
 def decrypt_txt_file(file):
     encryptor = Encryptor()
     with open(file, "r") as f:
         file_data = f.read()
     encryptor.decrypt_file(file_data, file)
+
+
 def change_extensions_in_folder(foldername, key):
     files = Path(foldername).glob("*")
     for file in files:
         base = os.path.splitext(file)[0]
         os.rename(file, base + ".AAAAA")
+
+
 class FileOfType:
     def __init__(self, type):
         self.type = type
@@ -207,6 +232,8 @@ class FileOfType:
             elif os.path.islink(path):
                 raise argparse.ArgumentTypeError(f"{path} is a symbolic link")
         return path
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Change every file extension to .AAAAA in folder")
     parser.add_argument("-dir", "--directory", type=FileOfType("dir"))
@@ -234,12 +261,14 @@ if len(sys.argv) < 2:
             if choice == "1":
                 root = tk.Tk()
                 root.withdraw()
+                root.title("Please choose a file")
                 file_path = filedialog.askopenfilename()
                 encrypt_txt_files(file_path)
                 flag = False
             elif choice == "2":
                 root = tk.Tk()
                 root.withdraw()
+                root.title("Please choose a dir")
                 folder_path = filedialog.askdirectory()
                 encrypt_txt_folder(folder_path)
                 flag = False
@@ -252,6 +281,7 @@ if len(sys.argv) < 2:
             choice = input()
             if choice == "1":
                 root = tk.Tk()
+                root.title("Please choose a file")
                 root.withdraw()
                 file_path = filedialog.askopenfilename()
                 decrypt_txt_file(file_path)
@@ -259,6 +289,7 @@ if len(sys.argv) < 2:
             elif choice == "2":
                 root = tk.Tk()
                 root.withdraw()
+                root.title("Please choose a dir")
                 folder_path = filedialog.askdirectory()
                 decrypt_txt_folder(folder_path)
                 flag = False
