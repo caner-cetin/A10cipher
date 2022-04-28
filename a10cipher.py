@@ -305,7 +305,7 @@ if len(sys.argv) < 2:
                 file_dir = os.path.dirname(file_path)
                 os.chdir(file_dir)
                 with open("file_dict.json", "w") as f:
-                     f.write(json.dumps(resultlist))
+                    f.write(json.dumps(resultlist))
                 print("PLEASE DO NOT DELETE THE JSON FILE FOR FUTURE DECRYPTION")
                 print("Encryption complete")
                 print("Press 3 to exit, press 2 to return to main menu")
@@ -442,8 +442,8 @@ if len(sys.argv) < 2:
                         for file in files:
                             file_path = os.path.join(subfolder, file)
                             # Find extension file that ends with json
-                            extension_json = [f for f in os.listdir(os.getcwd()) if f.endswith(".json")]
-                            if len(extension_json) == 0:
+                            extension_jsonify = [f for f in os.listdir(os.getcwd()) if f.endswith(".json")]
+                            if len(extension_jsonify) == 0:
                                 print("No file with .json extension found,original extension cannot be recovered")
                                 print("Press 3 to exit, press 2 to return to main menu")
                                 choice = input()
@@ -454,8 +454,7 @@ if len(sys.argv) < 2:
                             else:
                                 os.chdir(folder_path)
                                 #  Find extension file that ends with json
-                                extension_json = [f for f in os.listdir(folder_path) if f.endswith(".json")]
-                                with open(extension_json[0], "r") as f:
+                                with open(extension_jsonify[0], "r") as f:
                                     extension_json = json.loads(f.read())
                                 # Search file_path in extension_json for extension
                                 for i in range(len(extension_json)):
@@ -470,6 +469,7 @@ if len(sys.argv) < 2:
                                         # Decrypt file
                                         decrypt_txt_file(file_path)
                                         os.remove(extension_json[0])
+                    os.remove(extension_jsonify[0])
                     print("Decryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
@@ -484,36 +484,34 @@ if len(sys.argv) < 2:
                     # Iterate through every file on folder_path with scandir
                     # Scan files in folder_path
                     files = [f.path for f in os.scandir(folder_path) if f.is_file()]
+                    # Find extension file that ends with json
+                    extension_jsonify = [f for f in os.listdir(folder_path) if f.endswith(".json")]
+                    if len(extension_jsonify) == 0:
+                        print("No file with .json extension found,original extension cannot be recovered")
+                        print("Press 3 to exit, press 2 to return to main menu")
+                        choice = input()
+                        if choice == "3":
+                            flag = False
+                        elif choice == "2":
+                            flag = True
                     for file in files:
-                        # Find extension file that ends with json
-                        extension_json = [f for f in os.listdir(folder_path) if f.endswith(".json")]
-                        if len(extension_json) == 0:
-                            print("No file with .json extension found,original extension cannot be recovered")
-                            print("Press 3 to exit, press 2 to return to main menu")
-                            choice = input()
-                            if choice == "3":
-                                flag = False
-                            elif choice == "2":
-                                flag = True
-                        else:
-                            os.chdir(folder_path)
-                            #  Find extension file that ends with json
-                            extension_json = [f for f in os.listdir(folder_path) if f.endswith(".json")]
-                            with open(extension_json[0], "r") as f:
-                                extension_json = json.loads(f.read())
-                            # Search file_path in extension_json for extension
-                            for i in range(len(extension_json)):
-                                if file in extension_json[i][0]:
-                                    extension = extension_json[i][0][file]
-                                    # Change file extension with new extension
-                                    change_file_extension(file, extension)
-                                    # Delete .AAAAA from end of the file_path
-                                    file_path = file[:-5]
-                                    # Add extension to file_path
-                                    file_path = file_path + extension
-                                    # Decrypt file
-                                    decrypt_txt_file(file_path)
-                                    os.remove(extension_json[0])
+                        os.chdir(folder_path)
+                        #  Find extension file that ends with json
+                        with open(extension_jsonify[0], "r") as f:
+                            extension_json = json.loads(f.read())
+                        # Search file_path in extension_json for extension
+                        for i in range(len(extension_json)):
+                            if file in extension_json[i][0]:
+                                extension = extension_json[i][0][file]
+                                # Change file extension with new extension
+                                change_file_extension(file, extension)
+                                # Delete .AAAAA from end of the file_path
+                                file_path = file[:-5]
+                                # Add extension to file_path
+                                file_path = file_path + extension
+                                # Decrypt file
+                                decrypt_txt_file(file_path)
+                    os.remove(extension_jsonify[0])
                     print("Decryption complete")
                     # Delete extension file
                     print("Press 3 to exit, press 2 to return to main menu")
