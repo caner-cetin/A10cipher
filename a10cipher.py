@@ -1,9 +1,10 @@
-import sys
-import os
 import argparse
-from pathlib import Path
+import json
+import os
+import sys
 import tkinter as tk
 from tkinter import filedialog
+
 import click
 
 
@@ -28,7 +29,7 @@ class Encryptor():
             '(': '-.--.', ')': '0AAaAa0A0AAA0AAA0A0AAA',
             ";": "0A0AAA0AAaAa0A0AAA0AAA",
             "!": "0AA0A0AaaAA0A0AAA0AAA", "[": "AAA0aA0AAA0A0A0AAA", "]": "AAA0AAA0A0A", "&": "A0AAA0A0A0A",
-            "_": "AAA0A0A0A0AAA", "=": "AAAAAAA"
+            "_": "AAA0A0A0A0AAA", "=": "AAAAAAA", '"': "A0AAA0AAA0AAA0AAA0A0A",
         }
         self.AAAAA_code_DICT_upper = {
             'A': 'A0AAA', 'B': 'AAA0A0A0A0',
@@ -162,15 +163,24 @@ class Encryptor():
         return deciphered
 
 
-def get_original_extension_of_file(foldername: object, key: object) -> object:
-    files = Path(foldername).glob("*")
-    global original_extension
-    with open("extension.txt", "w") as file2:
-        for file in files:
-            file_name, file_extension = os.path.splitext(file)
-            original_extension = file_extension
-        file2.write(original_extension)
-    return original_extension
+def change_file_extension(file, new_extension):
+    # Get old extension of file for replacing later
+    old_extension = file.split(".")[-1]
+    # Get file name without extension
+    file_name = file.split(".")[0]
+    # Replace .AAAA as a new extension
+    new_file_name = file_name + "." + new_extension
+    # Overwrite old file with new file
+    os.rename(file, new_file_name)
+    z = file.split(old_extension)
+    # Add .AAAAA to the end of the z
+    new_file_path = z[0] + new_extension
+    # Store old file name without extension and old extension in a new dictionary
+    file_dict = {new_file_path: old_extension}
+    exportlist = []
+    exportlist.append(file_dict)
+    # Return new file name
+    return new_file_name, exportlist
 
 
 def encrypt_txt_folder(dir):
@@ -187,6 +197,7 @@ def encrypt_txt_folder(dir):
                 path = os.path.join(dir, file)
                 y = Encryptor()
                 y.encrypt_file(data, path)
+                change_file_extension(path, "AAAAA")
 
 
 def encrypt_txt_files(file):
@@ -217,6 +228,8 @@ def decrypt_txt_folder(dir):
                 with open(path, "r") as f:
                     file_data = f.read()
                 encryptor.decrypt_file(file_data, path)
+
+
 def decrypt_messages(message):
     encryptor = Encryptor()
     deciphered = encryptor.decrypt_msg(message)
@@ -231,13 +244,6 @@ def decrypt_txt_file(file):
     with open(file, "r") as f:
         file_data = f.read()
     encryptor.decrypt_file(file_data, file)
-
-
-def change_extensions_in_folder(foldername, key):
-    files = Path(foldername).glob("*")
-    for file in files:
-        base = os.path.splitext(file)[0]
-        os.rename(file, base + ".AAAAA")
 
 
 class FileOfType:
@@ -289,6 +295,17 @@ if len(sys.argv) < 2:
                 root.title("Please choose a file")
                 file_path = filedialog.askopenfilename()
                 encrypt_txt_files(file_path)
+                resultlist = []
+                test, list = change_file_extension(file_path, "AAAAA")
+                resultlist.append(list)
+                # Get base of file without extension
+                base = os.path.basename(file_path)
+                # Join file directory
+                file_dir = os.path.dirname(file_path)
+                os.chdir(file_dir)
+                with open("file_dict.json", "w") as f:
+                     f.write(json.dumps(resultlist))
+                print("PLEASE DO NOT DELETE THE FILE_DICT.JSON FILE FOR FUTURE DECRYPTION")
                 print("Encryption complete")
                 print("Press 3 to exit, press 2 to return to main menu")
                 choice = input()
@@ -303,10 +320,24 @@ if len(sys.argv) < 2:
                 print("Do you want subdirectories too or no?, just press 1 for yes or 2")
                 choice = int(input())
                 if choice == 1:
+                    resultlist = []
                     subfolders = [f.path for f in os.scandir(folder_path) if f.is_dir()]
                     for subfolder in subfolders:
                         encrypt_txt_folder(subfolder)
+                        # Get files in subfolders
+                        files = [f.path for f in os.scandir(subfolder) if f.is_file()]
+                        for file in files:
+                            test, list = change_file_extension(file, "AAAAA")
+                            resultlist.append(list)
+                        os.chdir(subfolder)
+                        # Get name of subfolder
+                        subfolder_name = os.path.basename(subfolder)
+                        extension_json = subfolder_name + ".json"
+                        os.chdir(subfolder)
+                        with open(extension_json, "w") as f:
+                            f.write(json.dumps(resultlist))
                     print("Encryption complete")
+                    print("PLEASE DO NOT DELETE THE FILE_DICT.JSON FILE FOR FUTURE DECRYPTION")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
                     if choice == "3":
@@ -316,8 +347,17 @@ if len(sys.argv) < 2:
                 elif choice == 2:
                     # Iterate through every file on folder_path with scandir
                     files = [f.path for f in os.scandir(folder_path) if f.is_file()]
+                    resultlist = []
                     for file in files:
                         encrypt_txt_files(file)
+                        test, list = change_file_extension(file, "AAAAA")
+                        resultlist.append(list)
+                    os.chdir(folder_path)
+                    # Get name of folder
+                    folder_name = os.path.basename(folder_path)
+                    extension_json = folder_name + ".json"
+                    with open(extension_json, "w") as f:
+                        f.write(json.dumps(resultlist))
                     print("Encryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
@@ -329,7 +369,9 @@ if len(sys.argv) < 2:
                 initial_message = "Enter the message you want to encrypt, save and close the editor when you are done."
                 edited_message = click.edit(initial_message)
                 encrypt_messages(edited_message)
-                print("Encrytion complete, encrypted text is in the file 'message.txt'")
+                # Change extension when done
+                change_file_extension("message.txt", "AAAAA")
+                print("Encryption complete, encrypted text is in the file 'message.AAAAA'")
                 print("Press 3 to exit, press 2 to return to main menu")
                 choice = input()
                 if choice == "3":
@@ -347,14 +389,43 @@ if len(sys.argv) < 2:
                 root = tk.Tk()
                 root.withdraw()
                 file_path = filedialog.askopenfilename()
-                decrypt_txt_file(file_path)
-                print("Decryption complete")
-                print("Press 3 to exit, press 2 to return to main menu")
-                choice = input()
-                if choice == "3":
-                    flag = False
-                elif choice == "2":
-                    flag = True
+                os.chdir(os.path.dirname(file_path))
+                # Find extension file that ends with json
+                extension_json = [f for f in os.listdir(os.getcwd()) if f.endswith(".json")]
+                if len(extension_json) == 0:
+                    print("No file with .json extension found,original extension cannot be recovered")
+                    print("Press 3 to exit, press 2 to return to main menu")
+                    choice = input()
+                    if choice == "3":
+                        flag = False
+                    elif choice == "2":
+                        flag = True
+                else:
+                    # Find extension file that ends with json
+                    os.chdir(file_path)
+                    extension_json = [f for f in os.listdir(os.getcwd()) if f.endswith(".json")]
+                    with open(extension_json[0], "r") as f:
+                        extension_json = json.loads(f.read())
+                    # Remove extension on file_path
+                    # Search file_path in extension_json for extension
+                    for i in range(len(extension_json)):
+                        if file_path in extension_json[0][i]:
+                            extension = extension_json[0][i][file_path]
+                            # Change file extension with new extension
+                            change_file_extension(file_path, extension)
+                            # Delete .AAAAA from end of the file_path
+                            file_path = file_path[:-5]
+                            # Add extension to file_path
+                            file_path = file_path + extension
+                            # Decrypt file
+                            decrypt_txt_file(file_path)
+                    print("Decryption complete")
+                    print("Press 3 to exit, press 2 to return to main menu")
+                    choice = input()
+                    if choice == "3":
+                        flag = False
+                    elif choice == "2":
+                        flag = True
             elif choice == "2":
                 print("Do you want subdirectories too or no?, just press 1 for yes or 2")
                 choice = int(input())
@@ -364,7 +435,38 @@ if len(sys.argv) < 2:
                     folder_path = filedialog.askdirectory()
                     subfolders = [f.path for f in os.scandir(folder_path) if f.is_dir()]
                     for subfolder in subfolders:
-                        decrypt_txt_folder(subfolder)
+                        # Find files in subfolder
+                        files = [f.path for f in os.scandir(subfolder) if f.is_file()]
+                        for file in files:
+                            file_path = os.path.join(subfolder, file)
+                            # Find extension file that ends with json
+                            extension_json = [f for f in os.listdir(os.getcwd()) if f.endswith(".json")]
+                            if len(extension_json) == 0:
+                                print("No file with .json extension found,original extension cannot be recovered")
+                                print("Press 3 to exit, press 2 to return to main menu")
+                                choice = input()
+                                if choice == "3":
+                                    flag = False
+                                elif choice == "2":
+                                    flag = True
+                            else:
+                                os.chdir(folder_path)
+                                #  Find extension file that ends with json
+                                extension_json = [f for f in os.listdir(folder_path) if f.endswith(".json")]
+                                with open(extension_json[0], "r") as f:
+                                    extension_json = json.loads(f.read())
+                                # Search file_path in extension_json for extension
+                                for i in range(len(extension_json)):
+                                    if file_path in extension_json[i][0]:
+                                        extension = extension_json[i][0][file_path]
+                                        # Change file extension with new extension
+                                        change_file_extension(file_path, extension)
+                                        # Delete .AAAAA from end of the file_path
+                                        file_path = file_path[:-5]
+                                        # Add extension to file_path
+                                        file_path = file_path + extension
+                                        # Decrypt file
+                                        decrypt_txt_file(file_path)
                     print("Decryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
@@ -377,9 +479,37 @@ if len(sys.argv) < 2:
                     root.withdraw()
                     folder_path = filedialog.askdirectory()
                     # Iterate through every file on folder_path with scandir
+                    # Scan files in folder_path
                     files = [f.path for f in os.scandir(folder_path) if f.is_file()]
                     for file in files:
-                        decrypt_txt_file(file)
+                        # Find extension file that ends with json
+                        extension_json = [f for f in os.listdir(folder_path) if f.endswith(".json")]
+                        if len(extension_json) == 0:
+                            print("No file with .json extension found,original extension cannot be recovered")
+                            print("Press 3 to exit, press 2 to return to main menu")
+                            choice = input()
+                            if choice == "3":
+                                flag = False
+                            elif choice == "2":
+                                flag = True
+                        else:
+                            os.chdir(folder_path)
+                            #  Find extension file that ends with json
+                            extension_json = [f for f in os.listdir(folder_path) if f.endswith(".json")]
+                            with open(extension_json[0], "r") as f:
+                                extension_json = json.loads(f.read())
+                            # Search file_path in extension_json for extension
+                            for i in range(len(extension_json)):
+                                if file in extension_json[i][0]:
+                                    extension = extension_json[i][0][file]
+                                    # Change file extension with new extension
+                                    change_file_extension(file, extension)
+                                    # Delete .AAAAA from end of the file_path
+                                    file_path = file[:-5]
+                                    # Add extension to file_path
+                                    file_path = file_path + extension
+                                    # Decrypt file
+                                    decrypt_txt_file(file_path)
                     print("Decryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
