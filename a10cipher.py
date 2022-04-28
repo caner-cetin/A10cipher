@@ -29,7 +29,8 @@ class Encryptor():
             '(': '-.--.', ')': '0AAaAa0A0AAA0AAA0A0AAA',
             ";": "0A0AAA0AAaAa0A0AAA0AAA",
             "!": "0AA0A0AaaAA0A0AAA0AAA", "[": "AAA0aA0AAA0A0A0AAA", "]": "AAA0AAA0A0A", "&": "A0AAA0A0A0A",
-            "_": "AAA0A0A0A0AAA", "=": "AAAAAAA", '"': "A0AAA0AAA0AAA0AAA0A0A",
+            "_": "AAA0A0A0A0AAA", "=": "AAAAAAA", '"': "A0AAA0AAA0AAA0AAA0A0A", '{': "AAA0A0A0A0A0A",
+            '\\': "AAA0A0A0A0A0AAA", '}': "AAA0A0A0A0A0A0A", '@': "A0AAA0A0A0A0A0A0A0A",
         }
         self.AAAAA_code_DICT_upper = {
             'A': 'A0AAA', 'B': 'AAA0A0A0A0',
@@ -305,7 +306,7 @@ if len(sys.argv) < 2:
                 os.chdir(file_dir)
                 with open("file_dict.json", "w") as f:
                      f.write(json.dumps(resultlist))
-                print("PLEASE DO NOT DELETE THE FILE_DICT.JSON FILE FOR FUTURE DECRYPTION")
+                print("PLEASE DO NOT DELETE THE JSON FILE FOR FUTURE DECRYPTION")
                 print("Encryption complete")
                 print("Press 3 to exit, press 2 to return to main menu")
                 choice = input()
@@ -337,7 +338,7 @@ if len(sys.argv) < 2:
                         with open(extension_json, "w") as f:
                             f.write(json.dumps(resultlist))
                     print("Encryption complete")
-                    print("PLEASE DO NOT DELETE THE FILE_DICT.JSON FILE FOR FUTURE DECRYPTION")
+                    print("PLEASE DO NOT DELETE THE JSON FILE FOR FUTURE DECRYPTION")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
                     if choice == "3":
@@ -419,6 +420,7 @@ if len(sys.argv) < 2:
                             file_path = file_path + extension
                             # Decrypt file
                             decrypt_txt_file(file_path)
+                            os.remove(extension_json[0])
                     print("Decryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
@@ -467,6 +469,7 @@ if len(sys.argv) < 2:
                                         file_path = file_path + extension
                                         # Decrypt file
                                         decrypt_txt_file(file_path)
+                                        os.remove(extension_json[0])
                     print("Decryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
@@ -510,7 +513,9 @@ if len(sys.argv) < 2:
                                     file_path = file_path + extension
                                     # Decrypt file
                                     decrypt_txt_file(file_path)
+                                    os.remove(extension_json[0])
                     print("Decryption complete")
+                    # Delete extension file
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
                     if choice == "3":
