@@ -624,38 +624,3 @@ if len(sys.argv) < 2:
         elif choice == "4":
             flag = False
             sys.exit()
-generate_key = args.generate_key
-directory_ = args.directory
-encrypt_ = args.encrypt
-decrypt_ = args.decrypt
-directory = args.directory
-file = args.file
-
-if encrypt_ == True:
-    print("Please enter a string to encrypt, leave this blank if you want to encrypt a .txt file")
-    message = input()
-    y = Encryptor()
-    y.encrypt_msg(message)
-if decrypt_ == True:
-    print("Please enter a string to decrypt, leave this blank if you want to decrypt a .txt file")
-    message = input()
-    y = Encryptor()
-    y.decrypt_msg(message)
-if (directory_ != None) and encrypt_ == True:
-    encrypt_txt_folder(directory_)
-if (directory_ != None) and decrypt_ == True:
-    decrypt_txt_folder(directory_)
-if (file != None) and encrypt_ == True:
-    encryptor = Encryptor()
-    with open(file, "r") as f:
-        file_data = f.read()
-    # Get path of file
-    path = os.path.join(file)
-    encryptor.encrypt_file(file_data, path)
-if (file != None) and decrypt_ == True:
-    encryptor = Encryptor()
-    with open(file, "r") as f:
-        file_data = f.read()
-    # Get path of file
-    path = os.path.join(file)
-    encryptor.decrypt_file(file_data, path)
