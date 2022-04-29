@@ -614,6 +614,6 @@ if len(sys.argv) < 2:
                         flag = True
             else:
                 print("Please enter a valid choice")
-        elif choice == "4":
+        elif choice == "3":
             flag = False
             sys.exit()
