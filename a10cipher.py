@@ -160,9 +160,9 @@ class Encryptor():
                 deciphered += upperdict[s]
             if s == "|":
                 deciphered += "|"
-        print(deciphered)
         with open(path, "w") as f:
             f.write(deciphered)
+        print("Decryption is done!")
         return deciphered
 
 
@@ -282,8 +282,7 @@ if len(sys.argv) < 2:
         print("Please enter a command")
         print("1. Encrypt")
         print("2. Decrypt")
-        print("3. Display Encrypted Messages")
-        print("4. Exit")
+        print("3. Exit")
         choice = input()
         if choice == "1":
             print("Please choose if you want to encrypt a file or a folder")
@@ -615,103 +614,6 @@ if len(sys.argv) < 2:
                         flag = True
             else:
                 print("Please enter a valid choice")
-        elif choice == "3":
-            print("Please pick the file message or folder you want to display")
-            print("1. Message")
-            print("2. Folder")
-            choice = input()
-            if choice == "1":
-                root = tk.Tk()
-                root.withdraw()
-                file_path = filedialog.askopenfilename()
-                with open(file_path, "r") as f:
-                    print(f.read())
-                print("Press 1 to decrypt the text, press 2 to return to main menu, 3 to exit.")
-                choice = input()
-                if choice == "1":
-                    decrypt_messages(file_path)
-                    print("Decryption complete")
-                    print("Decrypted text has overwritten the original file")
-                    print("Press 3 to exit, press 2 to return to main menu")
-                    choice = input()
-                    if choice == "3":
-                        flag = False
-                    elif choice == "2":
-                        flag = True
-                if choice == "2":
-                    flag = True
-                if choice == "3":
-                    sys.exit()
-            elif choice == "2":
-                root = tk.Tk()
-                root.withdraw()
-                file_list = []
-                folder_path = filedialog.askdirectory()
-                for folder in os.listdir(folder_path):
-                    if os.path.isdir(folder):
-                        # Find files in subfolders
-                        for file in os.listdir(folder):
-                            if file.endswith(".txt"):
-                                # Create list of files
-                                file_path = os.path.join(folder, file)
-                                file_list.append(file_path)
-                                with open(file_path, "r") as f:
-                                    print("File: " + file_path)
-                                    print(f.read())
-                print("Please choose which files to decrypt")
-                print("1. All")
-                print("2. Specific Files")
-                print("3. None")
-                choice = input()
-                if choice == "1":
-                    for file in file_list:
-                        decrypt_messages(file)
-                    print("Decryption complete")
-                    print("Decrypted text has overwritten the original files")
-                    print("Press 3 to exit, press 2 to return to main menu")
-                    choice = input()
-                    if choice == "3":
-                        flag = False
-                    elif choice == "2":
-                        flag = True
-                elif choice == "2":
-                    # List files on screen and allow user to choose which files to decrypt
-                    for file in file_list:
-                        print("File: " + file)
-                    print("Please enter the file names you want to decrypt")
-                    print("Enter the file names separated by commas")
-                    file_names = input()
-                    # Pick file_names on file_list
-                    file_names = file_names.split(",")
-                    for file_name in file_names:
-                        decrypt_txt_folder(os.path.join(folder_path, file_name))
-                    print("Decryption complete")
-                    print("Decrypted text has overwritten the original files")
-                    print("Press 3 to exit, press 2 to return to main menu")
-                    choice = input()
-                    if choice == "3":
-                        flag = False
-                    elif choice == "2":
-                        flag = True
-                elif choice == "3":
-                    flag = True
-
-                print("Press 1 to decrypt the text, press 2 to return to main menu, 3 to exit.")
-                choice = input()
-                if choice == "1":
-                    decrypt_txt_folder(folder_path)
-                    print("Decryption complete")
-                    print("Decrypted text has overwritten the original file")
-                    print("Press 3 to exit, press 2 to return to main menu")
-                    choice = input()
-                    if choice == "3":
-                        flag = False
-                    elif choice == "2":
-                        flag = True
-                if choice == "2":
-                    flag = True
-                if choice == "3":
-                    sys.exit()
         elif choice == "4":
             flag = False
             sys.exit()
