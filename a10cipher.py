@@ -29,7 +29,11 @@ class Encryptor():
             ";": "0A0AAA0AAaAa0A0AAA0AAA",
             "!": "0AA0A0AaaAA0A0AAA0AAA", "[": "AAA0aA0AAA0A0A0AAA", "]": "AAA0AAA0A0A", "&": "A0AAA0A0A0A",
             "_": "AAA0A0A0A0AAA", "=": "AAAAAAA", '"': "A0AAA0AAA0AAA0AAA0A0A", '{': "AAA0A0A0A0A0A",
-            '\\': "AAA0A0A0A0A0AAA", '}': "AAA0A0A0A0A0A0A", '@': "A0AAA0A0A0A0A0A0A0A",
+            '\\': "AAA0A0A0A0A0AAA", '}': "AAA0A0A0A0A0A0A", '@': "A0AAA0A0A0A0A0A0A0A", '#': "A0AAA0A0A0A0A0A0A0A0A",
+            '$': "A0AAA0A0A0A0A0A0A0A0A0A", '%': "A0AAA0A0A0aaA0A", '^': "A0AAA0A0A0A0A0A0A0A0A0A0A0A",
+            '&': "A0AaaaAa0A0A0A", '*': "A0AAA0A0A0A0A0aaaaA0A0A0A0A0A0A", '+': "A0AAAaaaAAaa0A0A0A0A0A0A",
+            '~': "A0AAaaaAA0A0A0A0A0A", '`': "A0AAA0A0AaaAa", '<': "AAA0A0A0aA0A0A0A0A0A0a",
+            "â": "A0a0a0AA", "€": "aaaaa00"
         }
         self.AAAAA_code_DICT_upper = {
             'A': 'A0AAA', 'B': 'AAA0A0A0A0',
@@ -360,27 +364,28 @@ if len(sys.argv) < 2:
                         files = [f.path for f in os.scandir(subfolder) if f.is_file()]
                         print("Files in " + subfolder + " scanned...")
                         for file in files:
-                            os.chdir(file)
+                            # Get directory of file
+                            file_dir = os.path.dirname(file)
+                            os.chdir(file_dir)
                             print("Encrypting file " + file)
                             encrypt_txt_files(file)
                             print("File " + file + " encrypted")
-                            change_file_extension(file, "AAAAA")
+                            test, list = change_file_extension(file, "AAAAA")
                             print("File " + file + " extension changed")
-                            resultlist.append(file)
+                            resultlist.append(list)
                         # Get dir name
                         dir_name = os.path.basename(subfolder)
-                        # Join file directory
-                        file_dir = os.path.dirname(subfolder)
-                        os.chdir(file_dir)
+                        os.chdir(subfolder)
                         json_name = dir_name + "_ext.json"
                         with open(json_name, "w") as f:
                             f.write(json.dumps(resultlist))
+                    resultlist = []
                     # Scan base directory
                     files = [f.path for f in os.scandir(folder_path) if f.is_file()]
                     for file in files:
                         encrypt_txt_files(file)
-                        change_file_extension(file, "AAAAA")
-                        resultlist.append(file)
+                        test, list = change_file_extension(file, "AAAAA")
+                        resultlist.append(list)
                     basedir_name = os.path.basename(folder_path)
                     json_base_name = basedir_name + "_ext.json"
                     os.chdir(folder_path)
@@ -490,13 +495,14 @@ if len(sys.argv) < 2:
                     folder_path = filedialog.askdirectory()
                     subfolders = [f.path for f in os.scandir(folder_path) if f.is_dir()]
                     for subfolder in subfolders:
+                        # Get basename of subfolder
+                        basename = os.path.basename(subfolder)
+                        extension_json = basename + "_ext.json"
                         # Find files in subfolder
                         files = [f.path for f in os.scandir(subfolder) if f.is_file()]
                         for file in files:
-                            file_path = os.path.join(subfolder, file)
-                            # Find extension file that ends with json
-                            extension_jsonify = [f for f in os.listdir(os.getcwd()) if f.endswith(".json")]
-                            if len(extension_jsonify) == 0:
+                            os.chdir(subfolder)
+                            if len(extension_json) == 0:
                                 print("No file with .json extension found,original extension cannot be recovered")
                                 print("Press 3 to exit, press 2 to return to main menu")
                                 choice = input()
@@ -505,24 +511,58 @@ if len(sys.argv) < 2:
                                 elif choice == "2":
                                     flag = True
                             else:
-                                os.chdir(folder_path)
+                                os.chdir(subfolder)
                                 #  Find extension file that ends with json
-                                with open(extension_jsonify[0], "r") as f:
-                                    extension_json = json.loads(f.read())
+                                with open(extension_json, "r") as f:
+                                    extension_json_data = json.loads(f.read())
                                 # Search file_path in extension_json for extension
-                                for i in range(len(extension_json)):
-                                    if file_path in extension_json[i][0]:
-                                        extension = extension_json[i][0][file_path]
+                                for i in range(len(extension_json_data)):
+                                    if file in extension_json_data[i][0]:
+                                        extension = extension_json_data[i][0][file]
                                         # Change file extension with new extension
-                                        change_file_extension(file_path, extension)
+                                        change_file_extension(file, extension)
                                         # Delete .AAAAA from end of the file_path
-                                        file_path = file_path[:-5]
+                                        file = file[:-5]
                                         # Add extension to file_path
-                                        file_path = file_path + extension
+                                        file = file + extension
                                         # Decrypt file
-                                        decrypt_txt_file(file_path)
-                                        os.remove(extension_json[0])
-                    os.remove(extension_jsonify[0])
+                                        decrypt_txt_file(file)
+                        os.remove(extension_json)
+                    basename = os.path.basename(folder_path)
+                    extension_json = basename + "_ext.json"
+                    os.chdir(folder_path)
+                    # Scan files in folder_path
+                    files = [f.path for f in os.scandir(folder_path) if f.is_file()]
+                    for file in files:
+                        if os.access(file, os.W_OK) and os.access(file, os.R_OK):
+                            if len(extension_json) == 0:
+                                print("No file with .json extension found,original extension cannot be recovered")
+                                print("Press 3 to exit, press 2 to return to main menu")
+                                choice = input()
+                                if choice == "3":
+                                    flag = False
+                                elif choice == "2":
+                                    flag = True
+                            else:
+                                os.chdir(subfolder)
+                                #  Find extension file that ends with json
+                                with open(extension_json, "r") as f:
+                                    extension_json_data = json.loads(f.read())
+                                # Search file_path in extension_json for extension
+                                for i in range(len(extension_json_data)):
+                                    if file in extension_json_data[i][0]:
+                                        extension = extension_json_data[i][0][file]
+                                        # Change file extension with new extension
+                                        change_file_extension(file, extension)
+                                        # Delete .AAAAA from end of the file_path
+                                        file = file[:-5]
+                                        # Add extension to file_path
+                                        file = file + extension
+                                        # Decrypt file
+                                        decrypt_txt_file(file)
+                        else:
+                            pass
+                    os.remove(extension_json)
                     print("Decryption complete")
                     print("Press 3 to exit, press 2 to return to main menu")
                     choice = input()
