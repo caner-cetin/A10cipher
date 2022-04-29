@@ -3,11 +3,10 @@ import json
 import os
 import sys
 import tkinter as tk
+from os.path import isfile
 from tkinter import filedialog
-
+import portalocker
 import click
-
-
 class Encryptor():
     def __init__(self):
         self.AAAAA_code_DICT_lower = {
@@ -131,7 +130,6 @@ class Encryptor():
                     ciphered += "|"
                 else:
                     ciphered += ""
-        print(ciphered)
         with open(path, "w") as f:
             f.write(ciphered)
 
@@ -189,17 +187,16 @@ def encrypt_txt_folder(dir):
     for file in os.listdir(dir):
         # If the file is a .txt file
         if file.endswith(".txt"):
+            # Get path of file
+            path = os.path.join(dir, file)
             # Open the file in read mode
-            with open(file, "r") as f:
+            with open(path, "r") as f:
                 # Read the contents of the file
                 data = f.read()
                 # Encrypt the contents of the file
                 # Get path of the file
-                path = os.path.join(dir, file)
                 y = Encryptor()
                 y.encrypt_file(data, path)
-                change_file_extension(path, "AAAAA")
-
 
 def encrypt_txt_files(file):
     encryptor = Encryptor()
@@ -295,16 +292,47 @@ if len(sys.argv) < 2:
                 root.withdraw()
                 root.title("Please choose a file")
                 file_path = filedialog.askopenfilename()
+                print("Encrypting file {}".format(file_path))
                 encrypt_txt_files(file_path)
+                print("File encrypted")
                 resultlist = []
                 test, list = change_file_extension(file_path, "AAAAA")
                 resultlist.append(list)
-                # Get base of file without extension
+                print("Would you like to encrypt the following files? (y/n)")
+                # Get directory of file_path
+                dir_path = os.path.dirname(file_path)
+                files = os.listdir(dir_path)
+                for i in files:
+                    print(i)
+                choice = input()
                 base = os.path.basename(file_path)
-                # Join file directory
+                json_name = base + ".json"
                 file_dir = os.path.dirname(file_path)
                 os.chdir(file_dir)
-                with open("file_dict.json", "w") as f:
+                if choice == "y":
+                    for i in files:
+                        if os.access(i, os.W_OK):
+                            if json_name in i:
+                                print("{} is a config file for decryption. Skipping.".format(i))
+                                continue
+                            if i.endswith(".AAAAA"):
+                                print("File {} already encrypted".format(i))
+                            else:
+                                print("Encrypting file {}".format(i))
+                                encrypt_txt_files(i)
+                                print("File {} encrypted".format(i))
+                                # Get path of i
+                                path = os.path.join(file_dir, i)
+                                test, list = change_file_extension(path, "AAAAA")
+                                print("File " + i + " extension changed")
+                                resultlist.append(list)
+                        else:
+                            print("ANANIN AMI")
+                    print("Files listed encrypted")
+                else:
+                    pass
+                os.chdir(file_dir)
+                with open(json_name, "w") as f:
                     f.write(json.dumps(resultlist))
                 print("PLEASE DO NOT DELETE THE JSON FILE FOR FUTURE DECRYPTION")
                 print("Encryption complete")
@@ -322,21 +350,42 @@ if len(sys.argv) < 2:
                 choice = int(input())
                 if choice == 1:
                     resultlist = []
+                    print("Result list created...")
                     subfolders = [f.path for f in os.scandir(folder_path) if f.is_dir()]
+                    print("Subfolders scanned...")
                     for subfolder in subfolders:
-                        encrypt_txt_folder(subfolder)
+                        print("Encrypting files in " + subfolder)
+                    for subfolder in subfolders:
                         # Get files in subfolders
                         files = [f.path for f in os.scandir(subfolder) if f.is_file()]
+                        print("Files in " + subfolder + " scanned...")
                         for file in files:
-                            test, list = change_file_extension(file, "AAAAA")
-                            resultlist.append(list)
-                        os.chdir(subfolder)
-                        # Get name of subfolder
-                        subfolder_name = os.path.basename(subfolder)
-                        extension_json = subfolder_name + ".json"
-                        os.chdir(subfolder)
-                        with open(extension_json, "w") as f:
+                            os.chdir(file)
+                            print("Encrypting file " + file)
+                            encrypt_txt_files(file)
+                            print("File " + file + " encrypted")
+                            change_file_extension(file, "AAAAA")
+                            print("File " + file + " extension changed")
+                            resultlist.append(file)
+                        # Get dir name
+                        dir_name = os.path.basename(subfolder)
+                        # Join file directory
+                        file_dir = os.path.dirname(subfolder)
+                        os.chdir(file_dir)
+                        json_name = dir_name + "_ext.json"
+                        with open(json_name, "w") as f:
                             f.write(json.dumps(resultlist))
+                    # Scan base directory
+                    files = [f.path for f in os.scandir(folder_path) if f.is_file()]
+                    for file in files:
+                        encrypt_txt_files(file)
+                        change_file_extension(file, "AAAAA")
+                        resultlist.append(file)
+                    basedir_name = os.path.basename(folder_path)
+                    json_base_name = basedir_name + "_ext.json"
+                    os.chdir(folder_path)
+                    with open(json_base_name, "w") as f:
+                        f.write(json.dumps(resultlist))
                     print("Encryption complete")
                     print("PLEASE DO NOT DELETE THE JSON FILE FOR FUTURE DECRYPTION")
                     print("Press 3 to exit, press 2 to return to main menu")
@@ -348,10 +397,14 @@ if len(sys.argv) < 2:
                 elif choice == 2:
                     # Iterate through every file on folder_path with scandir
                     files = [f.path for f in os.scandir(folder_path) if f.is_file()]
+                    print("Files scanned...")
                     resultlist = []
                     for file in files:
+                        print("Encrypting file " + file)
                         encrypt_txt_files(file)
+                        print("File " + file + " encrypted")
                         test, list = change_file_extension(file, "AAAAA")
+                        print("File " + file + " extension changed")
                         resultlist.append(list)
                     os.chdir(folder_path)
                     # Get name of folder
