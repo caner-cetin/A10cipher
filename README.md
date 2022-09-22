@@ -1,5 +1,5 @@
 # A10_cipher
-I MANAGED TO FUCKING FINALLY DECRYPT THIS PILE OF SHIT.
+I MANAGED TO FUCKING FINALLY DECRYPT THIS **profanity**
 ```ruby
 options:
  Removed args, just fire main.py, or exe file.
