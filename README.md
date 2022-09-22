@@ -6,6 +6,8 @@ options:
 ```
 well... this was a meme alphabet and cipher that mistakenly created because of some small **profanity** in hill 2x2 matrix decryption, and every encrypted text was decrypted to AAAAAAA.
 
+every encrypted single message is thrown into message.txt with same folder to wherever you downloaded the .exe.
+
 I implemented a morse alphabet, that is translated to A10 cipher. For example:
 "A" is equal to: Aa0AAA
 "E" is equal to: A10AA0A0AAAAAAAAA
