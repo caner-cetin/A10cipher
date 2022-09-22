@@ -96,7 +96,7 @@ class Encryptor():
             # Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
             # Check line 54.
             # [ is equal to AAA A AAA A A AAA. -.-..-
-            # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but fuck it.
+            # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but  doot it.
             letter_check = letter.isupper()
             if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
                 ciphered += upperdict[letter] + " "
@@ -122,7 +122,7 @@ class Encryptor():
                 # Side note, ; is equal to .--.-- This is not a valid morse code, but it is valid on AAAArse code alphabet.
                 # Check line 54.
                 # [ is equal to AAA A AAA A A AAA. -.-..-
-                # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but fuck it.
+                # ] is equal to AAA AAA A A. --.. It might be valid for something on morse alphabet but doot it.
                 letter_check = letter.isupper()
                 if (letter != " ") and (letter_check == True) and (letter != "\n") and (letter != "|"):
                     ciphered += upperdict[letter] + " "
