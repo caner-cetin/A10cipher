@@ -4,7 +4,7 @@ I MANAGED TO **profanity** FINALLY DECRYPT THIS **profanity**
 options:
  Removed args, just fire main.py, or exe file.
 ```
-well... this was a meme alphabet and cipher that mistakenly created because of some small fuckups in hill 2x2 matrix decryption, and every encrypted text was decrypted to AAAAAAA.
+well... this was a meme alphabet and cipher that mistakenly created because of some small **profanity** in hill 2x2 matrix decryption, and every encrypted text was decrypted to AAAAAAA.
 
 I implemented a morse alphabet, that is translated to A10 cipher. For example:
 "A" is equal to: Aa0AAA
