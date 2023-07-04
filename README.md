@@ -1,3 +1,6 @@
+# please note that this is one of the first python code that I have ever written. yes it is potato, but it works.
+
+
 # A10_cipher
 I MANAGED TO **profanity** FINALLY DECRYPT THIS **profanity**
 ```ruby
